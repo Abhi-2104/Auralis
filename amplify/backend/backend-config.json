@@ -15,6 +15,44 @@
       },
       "providerPlugin": "awscloudformation",
       "service": "AppSync"
+    },
+    "auralisapi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "auralismainfunc"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "getSongs"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "createPlaylist"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "addSongToPlaylist"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
     }
   },
   "auth": {
@@ -44,8 +82,196 @@
     }
   },
   "function": {
+    "addSongToPlaylist": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "musicstorage"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Songs"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Playlists"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "auralis"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "auralisbackend": {
       "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "auralismainfunc": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "auralisde9fb2f9"
+        },
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "musicstorage"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "auralis"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "createPlaylist": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Playlists"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "auralisde9fb2f9"
+        },
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "musicstorage"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Songs"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Playlists"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "auralis"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "getSongs": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributeEnvMap": {
+            "Arn": "TABLE_ARN",
+            "Name": "TABLE_NAME"
+          },
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "storage",
+          "resourceName": "Songs"
+        },
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "auralisde9fb2f9"
+        },
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "musicstorage"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Songs"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "auralis"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "registerUser": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "auralisde9fb2f9"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
@@ -58,6 +284,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_addSongToPlaylist_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addSongToPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_addSongToPlaylist_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addSongToPlaylist"
+        }
+      ]
+    },
     "AMPLIFY_function_auralisbackend_deploymentBucketName": {
       "usedBy": [
         {
@@ -71,6 +313,78 @@
         {
           "category": "function",
           "resourceName": "auralisbackend"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralismainfunc_defaultPageSize": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralismainfunc"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralismainfunc_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralismainfunc"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralismainfunc_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralismainfunc"
+        }
+      ]
+    },
+    "AMPLIFY_function_createPlaylist_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_createPlaylist_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_getSongs_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getSongs"
+        }
+      ]
+    },
+    "AMPLIFY_function_getSongs_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getSongs"
+        }
+      ]
+    },
+    "AMPLIFY_function_registerUser_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "registerUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_registerUser_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "registerUser"
         }
       ]
     },
@@ -92,6 +406,14 @@
     }
   },
   "storage": {
+    "Playlists": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "Songs": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
     "musicstorage": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",

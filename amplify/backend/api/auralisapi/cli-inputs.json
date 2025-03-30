@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "paths": {
+    "/api": {
+      "name": "/api",
+      "lambdaFunction": "auralismainfunc",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/songs": {
+      "name": "/songs",
+      "lambdaFunction": "getSongs",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "read"
+        ]
+      }
+    },
+    "/playlists": {
+      "name": "/playlists",
+      "lambdaFunction": "createPlaylist",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/playlists/add-song": {
+      "name": "/playlists/add-song",
+      "lambdaFunction": "addSongToPlaylist",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

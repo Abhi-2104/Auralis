@@ -1,0 +1,10 @@
+{
+  "resourceName": "Playlists",
+  "tableName": "Playlists",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

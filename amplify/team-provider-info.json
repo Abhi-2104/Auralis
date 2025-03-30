@@ -9,7 +9,8 @@
       "UnauthRoleName": "amplify-auralis-dev-69e06-unauthRole",
       "StackName": "amplify-auralis-dev-69e06",
       "StackId": "arn:aws:cloudformation:ap-south-1:024848481599:stack/amplify-auralis-dev-69e06/210a2c40-0cc9-11f0-a009-02449dbdb429",
-      "AmplifyAppId": "d1gr5d72yk397h"
+      "AmplifyAppId": "d1gr5d72yk397h",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-auralis-dev-69e06-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
     },
     "categories": {
       "auth": {
@@ -19,16 +20,43 @@
         "auralisbackend": {
           "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
           "s3Key": "amplify-builds/auralisbackend-75546a4338486241374f-build.zip"
+        },
+        "auralismainfunc": {
+          "defaultPageSize": "50",
+          "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+          "s3Key": "amplify-builds/auralismainfunc-76432b7532796262756e-build.zip"
+        },
+        "registerUser": {
+          "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+          "s3Key": "amplify-builds/registerUser-71364c496439726f622f-build.zip"
+        },
+        "getSongs": {
+          "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+          "s3Key": "amplify-builds/getSongs-6169456756677a754842-build.zip"
+        },
+        "createPlaylist": {
+          "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+          "s3Key": "amplify-builds/createPlaylist-6a4e364c4c736f61624e-build.zip"
+        },
+        "addSongToPlaylist": {
+          "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+          "s3Key": "amplify-builds/addSongToPlaylist-6d6554534a442f4b5950-build.zip"
         }
       },
       "storage": {
-        "musicstorage": {}
+        "musicstorage": {},
+        "Songs": {},
+        "Playlists": {}
       },
       "hosting": {
         "amplifyhosting": {
           "appId": "d1gr5d72yk397h",
           "type": "cicd"
         }
+      },
+      "api": {
+        "auralis": {},
+        "auralisapi": {}
       }
     }
   }

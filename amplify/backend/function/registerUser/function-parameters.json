@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "auth": {
+      "auralisde9fb2f9": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}
