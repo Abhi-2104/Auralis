@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react'; // Import useCallback
 import { Amplify } from 'aws-amplify';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import awsExports from '../../src/aws-exports';
@@ -64,7 +64,7 @@ export default function Home() {
       exit={{ opacity: 0, scale: 0.95, y: -50 }}
       transition={{
         duration: 0.6,
-        ease: "easeInOut", // Using a valid predefined easing function
+        ease: "easeInOut",
       }}
     >
       <header className={styles.header}>
