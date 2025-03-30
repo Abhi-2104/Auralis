@@ -1,0 +1,35 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-auralis-dev-69e06-authRole",
+      "UnauthRoleArn": "arn:aws:iam::024848481599:role/amplify-auralis-dev-69e06-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::024848481599:role/amplify-auralis-dev-69e06-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+      "UnauthRoleName": "amplify-auralis-dev-69e06-unauthRole",
+      "StackName": "amplify-auralis-dev-69e06",
+      "StackId": "arn:aws:cloudformation:ap-south-1:024848481599:stack/amplify-auralis-dev-69e06/210a2c40-0cc9-11f0-a009-02449dbdb429",
+      "AmplifyAppId": "d1gr5d72yk397h"
+    },
+    "categories": {
+      "auth": {
+        "auralisde9fb2f9": {}
+      },
+      "function": {
+        "auralisbackend": {
+          "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+          "s3Key": "amplify-builds/auralisbackend-75546a4338486241374f-build.zip"
+        }
+      },
+      "storage": {
+        "musicstorage": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d1gr5d72yk397h",
+          "type": "cicd"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "resourceName": "musicstorage",
+  "policyUUID": "38038dba",
+  "bucketName": "auralis-music-storage",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

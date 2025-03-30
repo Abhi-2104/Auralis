@@ -1,0 +1,29 @@
+type User @model {
+  id: ID!
+  username: String!
+  email: String!
+  playlists: [Playlist] @hasMany(indexName: "byUser", fields: ["id"])
+}
+
+type Playlist @model {
+  id: ID!
+  name: String!
+  userID: ID! @index(name: "byUser")
+  user: User @belongsTo(fields: ["userID"])
+  playlistSongs: [PlaylistSongs] @hasMany(indexName: "byPlaylist", fields: ["id"])
+}
+
+type Song @model {
+  id: ID!
+  title: String!
+  artist: String!
+  playlistSongs: [PlaylistSongs] @hasMany(indexName: "bySong", fields: ["id"])
+}
+
+type PlaylistSongs @model(queries: null) {
+  id: ID!
+  playlistID: ID! @index(name: "byPlaylist")
+  songID: ID! @index(name: "bySong")
+  playlist: Playlist @belongsTo(fields: ["playlistID"])
+  song: Song @belongsTo(fields: ["songID"])
+}
