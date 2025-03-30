@@ -344,6 +344,200 @@
       "type": "cicd"
     }
   },
+  "parameters": {
+    "AMPLIFY_function_S3Trigger7b56c679_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger7b56c679"
+        }
+      ]
+    },
+    "AMPLIFY_function_S3Trigger7b56c679_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger7b56c679"
+        }
+      ]
+    },
+    "AMPLIFY_function_S3Trigger8d0bcc59_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger8d0bcc59"
+        }
+      ]
+    },
+    "AMPLIFY_function_S3Trigger8d0bcc59_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "S3Trigger8d0bcc59"
+        }
+      ]
+    },
+    "AMPLIFY_function_addSongToPlaylist_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addSongToPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_addSongToPlaylist_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "addSongToPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralisbackend_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralisbackend"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralisbackend_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralisbackend"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralismainfunc_defaultPageSize": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralismainfunc"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralismainfunc_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralismainfunc"
+        }
+      ]
+    },
+    "AMPLIFY_function_auralismainfunc_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "auralismainfunc"
+        }
+      ]
+    },
+    "AMPLIFY_function_createPlaylist_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_createPlaylist_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "createPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_cloudfrontDomain": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_cloudfrontKeyPairId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_cloudfrontPrivateKey": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_getSongs_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getSongs"
+        }
+      ]
+    },
+    "AMPLIFY_function_getSongs_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "getSongs"
+        }
+      ]
+    },
+    "AMPLIFY_function_registerUser_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "registerUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_registerUser_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "registerUser"
+        }
+      ]
+    },
+    "AMPLIFY_hosting_amplifyhosting_appId": {
+      "usedBy": [
+        {
+          "category": "hosting",
+          "resourceName": "amplifyhosting"
+        }
+      ]
+    },
+    "AMPLIFY_hosting_amplifyhosting_type": {
+      "usedBy": [
+        {
+          "category": "hosting",
+          "resourceName": "amplifyhosting"
+        }
+      ]
+    }
+  },
   "storage": {
     "Playlists": {
       "providerPlugin": "awscloudformation",

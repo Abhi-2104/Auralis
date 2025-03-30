@@ -6,9 +6,7 @@ const mm = require('music-metadata');
 const stream = require('stream');
 
 /**
- * Processes uploaded audio files:
- * 1. Extract metadata (title, artist, album, duration)
- * 2. Update the Songs database table
+ * Processes uploaded audio files for bucket: auralis-music-storage69e06-dev
  */
 exports.handler = async (event) => {
     console.log('Received S3 event:', JSON.stringify(event, null, 2));
@@ -39,25 +37,30 @@ exports.handler = async (event) => {
             size: s3Object.ContentLength
         });
         
+        // Extract filename without extension for title fallback
+        const fileName = key.split('/').pop().replace(/\.(mp3|wav|ogg|flac|m4a)$/i, '');
+        
         // Generate a unique song ID
         const songId = uuidv4();
         
-        // Prepare song data
+        // Prepare song data with extracted metadata
         const songData = {
             id: songId,
-            title: metadata.common.title || key.split('/').pop().replace(/\.(mp3|wav|ogg|flac|m4a)$/i, ''),
+            title: metadata.common.title || fileName,
             artist: metadata.common.artist || 'Unknown Artist',
             album: metadata.common.album || 'Unknown Album',
-            genre: metadata.common.genre ? metadata.common.genre[0] : 'Uncategorized',
+            genre: metadata.common.genre?.length ? metadata.common.genre[0] : 'Uncategorized',
             duration: Math.round(metadata.format.duration || 0),
             audioUrl: `s3://${bucket}/${key}`,
-            imageUrl: '',
+            imageUrl: '',  // Could extract embedded artwork if present
             createdAt: new Date().toISOString()
         };
         
-        // Store in DynamoDB
+        console.log('Extracted song data:', JSON.stringify(songData, null, 2));
+        
+        // Store in DynamoDB - make sure table name is correct
         await docClient.put({
-            TableName: process.env.STORAGE_SONGS_NAME,
+            TableName: process.env.STORAGE_SONGS_NAME || 'Songs',
             Item: songData
         }).promise();
         
