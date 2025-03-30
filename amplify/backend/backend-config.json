@@ -49,6 +49,14 @@
           ],
           "category": "function",
           "resourceName": "addSongToPlaylist"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "generateSignedUrl"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -82,6 +90,16 @@
     }
   },
   "function": {
+    "S3Trigger7b56c679": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "S3Trigger8d0bcc59": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "addSongToPlaylist": {
       "build": true,
       "dependsOn": [
@@ -212,6 +230,45 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
+    "generateSignedUrl": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "musicstorage"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Songs"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Playlists"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "auralis"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "getSongs": {
       "build": true,
       "dependsOn": [
@@ -277,132 +334,14 @@
     }
   },
   "hosting": {
+    "S3AndCloudFront": {
+      "providerPlugin": "awscloudformation",
+      "service": "S3AndCloudFront"
+    },
     "amplifyhosting": {
       "lastPushTimeStamp": "2025-03-30T08:36:18.820Z",
       "service": "amplifyhosting",
       "type": "cicd"
-    }
-  },
-  "parameters": {
-    "AMPLIFY_function_addSongToPlaylist_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "addSongToPlaylist"
-        }
-      ]
-    },
-    "AMPLIFY_function_addSongToPlaylist_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "addSongToPlaylist"
-        }
-      ]
-    },
-    "AMPLIFY_function_auralisbackend_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "auralisbackend"
-        }
-      ]
-    },
-    "AMPLIFY_function_auralisbackend_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "auralisbackend"
-        }
-      ]
-    },
-    "AMPLIFY_function_auralismainfunc_defaultPageSize": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "auralismainfunc"
-        }
-      ]
-    },
-    "AMPLIFY_function_auralismainfunc_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "auralismainfunc"
-        }
-      ]
-    },
-    "AMPLIFY_function_auralismainfunc_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "auralismainfunc"
-        }
-      ]
-    },
-    "AMPLIFY_function_createPlaylist_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "createPlaylist"
-        }
-      ]
-    },
-    "AMPLIFY_function_createPlaylist_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "createPlaylist"
-        }
-      ]
-    },
-    "AMPLIFY_function_getSongs_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "getSongs"
-        }
-      ]
-    },
-    "AMPLIFY_function_getSongs_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "getSongs"
-        }
-      ]
-    },
-    "AMPLIFY_function_registerUser_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "registerUser"
-        }
-      ]
-    },
-    "AMPLIFY_function_registerUser_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "registerUser"
-        }
-      ]
-    },
-    "AMPLIFY_hosting_amplifyhosting_appId": {
-      "usedBy": [
-        {
-          "category": "hosting",
-          "resourceName": "amplifyhosting"
-        }
-      ]
-    },
-    "AMPLIFY_hosting_amplifyhosting_type": {
-      "usedBy": [
-        {
-          "category": "hosting",
-          "resourceName": "amplifyhosting"
-        }
-      ]
     }
   },
   "storage": {
@@ -415,7 +354,17 @@
       "service": "DynamoDB"
     },
     "musicstorage": {
-      "dependsOn": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "LambdaExecutionRole"
+          ],
+          "category": "function",
+          "resourceName": "S3Trigger8d0bcc59"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "S3"
     }

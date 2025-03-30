@@ -1,0 +1,128 @@
+.audioPlayer {
+    width: 100%;
+    background-color: var(--bg-tertiary);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .songInfo {
+    margin-bottom: 15px;
+  }
+  
+  .title {
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--text-primary);
+  }
+  
+  .artist {
+    font-size: 0.9rem;
+    margin: 5px 0 0;
+    color: var(--text-secondary);
+  }
+  
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .playPause {
+    background-color: var(--accent-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease;
+  }
+  
+  .playPause:hover {
+    transform: scale(1.1);
+  }
+  
+  .progressContainer {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .progressBar {
+    flex-grow: 1;
+    height: 6px;
+    border-radius: 3px;
+    background-color: var(--bg-secondary);
+    appearance: none;
+    cursor: pointer;
+  }
+  
+  .progressBar::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+  }
+  
+  .progressBar::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--accent-primary);
+  }
+  
+  .currentTime, .duration {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    min-width: 35px;
+  }
+  
+  .loading {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+  
+  .error {
+    padding: 20px;
+    text-align: center;
+    color: var(--error);
+    background-color: var(--bg-tertiary);
+    border-radius: 10px;
+  }
+  
+  .closeButton {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  
+  .closeButton:hover {
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  @media (max-width: 500px) {
+    .audioPlayer {
+      padding: 15px;
+    }
+    
+    .controls {
+      flex-direction: column;
+      gap: 10px;
+    }
+  }

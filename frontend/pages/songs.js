@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { Amplify } from 'aws-amplify';
-import { get, post, put, del } from 'aws-amplify/api';
+import { get, post } from 'aws-amplify/api';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import awsExports from '../../src/aws-exports';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import AudioPlayer from '../components/AudioPlayer';
 import styles from '../styles/songs.module.css';
 
 Amplify.configure(awsExports);
@@ -25,6 +26,7 @@ export default function Songs() {
   const [showPlaylistModal, setShowPlaylistModal] = useState(false);
   const [selectedSong, setSelectedSong] = useState(null);
   const [addingSong, setAddingSong] = useState(false);
+  const [currentlyPlaying, setCurrentlyPlaying] = useState(null); // Add this state
   const router = useRouter();
 
   // Check if user is authenticated
@@ -40,9 +42,9 @@ export default function Songs() {
   }, [router]);
 
   // Fetch songs
-  const fetchSongs = useCallback(async (genre = 'All', token = null) => {
+  const fetchSongs = useCallback(async (genre = selectedGenre, token = null, reset = false) => {
     try {
-      const apiName = 'auralisapi';
+      setLoading(true);
       let path = '/api/songs';
       const queryParams = {};
       
@@ -54,267 +56,321 @@ export default function Songs() {
         queryParams.nextToken = token;
       }
       
-      // Add query params to path
+      // Add query parameters to the path
       if (Object.keys(queryParams).length > 0) {
         const queryString = new URLSearchParams(queryParams).toString();
         path = `${path}?${queryString}`;
       }
       
-      // Updated API call
-      const response = await get({ apiName, path });
+      const response = await get({
+        apiName: 'auralisapi',
+        path
+      });
       
-      if (!token) {
-        setSongs(response.songs);
-      } else {
-        setSongs(prev => [...prev, ...response.songs]);
+      if (response) {
+        if (reset) {
+          setSongs(response.songs || []);
+        } else {
+          setSongs(prev => [...prev, ...(response.songs || [])]);
+        }
+        
+        // Update pagination token
+        setNextToken(response.nextToken || null);
+        setHasMore(!!response.nextToken);
       }
-      
-      setNextToken(response.nextToken);
-      setHasMore(!!response.nextToken);
     } catch (error) {
       console.error('Error fetching songs:', error);
-      setError('Failed to load songs. Please try again later.');
+      setError('Failed to load songs. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  }, [selectedGenre]);
 
-  // Fetch playlists for the add to playlist modal
+  // Fetch playlists
   const fetchPlaylists = useCallback(async () => {
     try {
-      const apiName = 'auralisapi';
-      const path = '/api/playlists';
-      // Updated API call
-      const response = await get({ apiName, path });
-      setPlaylists(response);
+      const response = await get({
+        apiName: 'auralisapi',
+        path: '/api/playlists'
+      });
+      
+      if (response) {
+        setPlaylists(response);
+      }
     } catch (error) {
       console.error('Error fetching playlists:', error);
-      // Don't set error here to avoid confusion with song loading errors
+      // We don't want to show an error for playlists fetch
+      // as it's not critical to this page's function
+      setPlaylists([]);
     }
   }, []);
 
+  // Handle genre filter change
+  const handleGenreChange = (genre) => {
+    setSelectedGenre(genre);
+    fetchSongs(genre, null, true);
+  };
+
+  // Handle load more
+  const handleLoadMore = () => {
+    if (hasMore && nextToken) {
+      fetchSongs(selectedGenre, nextToken);
+    }
+  };
+
+  // Handle play song
+  const handlePlaySong = (song) => {
+    setCurrentlyPlaying(song.id);
+  };
+
+  // Handle stop playing
+  const handleStopPlaying = () => {
+    setCurrentlyPlaying(null);
+  };
+
+  // Handle add to playlist
+  const handleAddToPlaylist = (song) => {
+    setSelectedSong(song);
+    setShowPlaylistModal(true);
+  };
+
+  // Handle add song to playlist
+  const addSongToPlaylist = async (playlistId) => {
+    if (!selectedSong || !playlistId) return;
+    
+    try {
+      setAddingSong(true);
+      
+      await post({
+        apiName: 'auralisapi',
+        path: '/api/playlists/add-song',
+        options: {
+          body: {
+            playlistId,
+            songId: selectedSong.id
+          }
+        }
+      });
+      
+      // Close modal and reset state
+      setShowPlaylistModal(false);
+      setSelectedSong(null);
+      // Show success notification here if you have one
+    } catch (error) {
+      console.error('Error adding song to playlist:', error);
+      setError('Failed to add song to playlist. Please try again.');
+    } finally {
+      setAddingSong(false);
+    }
+  };
+
+  // Handle sign out
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  // Initial data loading
   useEffect(() => {
     checkUser();
   }, [checkUser]);
 
   useEffect(() => {
     if (user) {
-      fetchSongs(selectedGenre);
+      fetchSongs(selectedGenre, null, true);
       fetchPlaylists();
     }
-  }, [user, selectedGenre, fetchSongs, fetchPlaylists]);
+  }, [user, fetchSongs, fetchPlaylists]);
 
-  const handleSignOut = async () => {
-    const confirmSignOut = confirm('Are you sure you want to sign out?');
-    if (confirmSignOut) {
-      try {
-        await signOut();
-        router.push('/login');
-      } catch (err) {
-        console.error('Error signing out:', err);
-      }
-    }
-  };
-
-  const handleGenreChange = (genre) => {
-    setSelectedGenre(genre);
-    setSongs([]);
-    setNextToken(null);
-    setHasMore(true);
-  };
-
-  const handleLoadMore = () => {
-    if (nextToken && hasMore) {
-      fetchSongs(selectedGenre, nextToken);
-    }
-  };
-
-  const openAddToPlaylistModal = (song) => {
-    setSelectedSong(song);
-    setShowPlaylistModal(true);
-  };
-
-  const handleAddToPlaylist = async (playlistId) => {
-    if (!selectedSong || !playlistId) return;
-    
-    setAddingSong(true);
-    try {
-      const apiName = 'auralisapi';
-      const path = '/api/playlists/add-song';
-      // Updated API call
-      await post({
-        apiName, 
-        path,
-        options: {
-          body: {
-            playlistId,
-            songId: selectedSong.id
-          },
-          headers: { 'Content-Type': 'application/json' }
-        }
-      });
-      
-      // Show success message
-      alert(`"${selectedSong.title}" added to playlist!`);
-      setShowPlaylistModal(false);
-    } catch (error) {
-      console.error('Error adding song to playlist:', error);
-      alert('Failed to add song to playlist. Please try again.');
-    } finally {
-      setAddingSong(false);
-    }
-  };
-
-  if (loading) {
+  if (loading && songs.length === 0) {
     return (
-      <motion.div
-        className={styles.loaderContainer}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      >
+      <div className={styles.loaderContainer}>
         <div className={styles.spinner}></div>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      className={styles.container}
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -50 }}
-      transition={{ duration: 0.6, ease: "easeInOut" }}
-    >
+    <div className={styles.container}>
       <header className={styles.header}>
         <Link href="/">
           <div className={styles.logo}>AURALIS</div>
         </Link>
-        <nav className={styles.nav}>
+        <nav>
           <Link href="/playlists">
             <span className={styles.navLink}>Your Playlists</span>
           </Link>
-          <span className={`${styles.navLink} ${styles.navLinkActive}`}>
-            Explore Music
-          </span>
+          <Link href="/explore">
+            <span className={styles.navLink}>Explore</span>
+          </Link>
         </nav>
         <button className={styles.signOutButton} onClick={handleSignOut}>
           Sign Out
         </button>
       </header>
 
-      <h1 className={styles.title}>Explore Music</h1>
-      <p className={styles.description}>
-        Discover new songs and add them to your playlists
-      </p>
+      <main className={styles.main}>
+        <h1 className={styles.title}>Music Library</h1>
 
-      {error && <div className={styles.error}>{error}</div>}
-
-      <div className={styles.filters}>
-        {GENRES.map(genre => (
-          <button
-            key={genre}
-            className={`${styles.filterButton} ${selectedGenre === genre ? styles.filterButtonActive : ''}`}
-            onClick={() => handleGenreChange(genre)}
-          >
-            {genre}
-          </button>
-        ))}
-      </div>
-
-      {songs.length > 0 ? (
-        <div className={styles.songGrid}>
-          {songs.map((song, index) => (
-            <motion.div
-              key={song.id}
-              className={styles.songCard}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+        {/* Genre filter buttons */}
+        <div className={styles.genreFilter}>
+          {GENRES.map(genre => (
+            <button
+              key={genre}
+              className={`${styles.genreButton} ${selectedGenre === genre ? styles.active : ''}`}
+              onClick={() => handleGenreChange(genre)}
             >
-              <div className={styles.songImage}>
-                {song.imageUrl ? (
-                  <img src={song.imageUrl} alt={song.title} />
-                ) : (
-                  <div className={styles.songImagePlaceholder}>♪</div>
-                )}
-                <div className={styles.playButton}>
-                  <div className={styles.playIcon}></div>
-                </div>
-              </div>
-              <div className={styles.songInfo}>
-                <h3 className={styles.songTitle}>{song.title}</h3>
-                <p className={styles.songArtist}>{song.artist}</p>
-                <button 
-                  className={styles.addButton}
-                  onClick={() => openAddToPlaylistModal(song)}
-                >
-                  Add to Playlist
-                </button>
-              </div>
-            </motion.div>
+              {genre}
+            </button>
           ))}
         </div>
-      ) : (
-        <div className={styles.emptyState}>
-          <p>No songs found. Try a different genre filter.</p>
-        </div>
-      )}
 
-      {hasMore && (
-        <button 
-          className={`${styles.button} ${styles.loadMore}`}
-          onClick={handleLoadMore}
-        >
-          Load More
-        </button>
-      )}
+        {/* Error message */}
+        {error && <div className={styles.error}>{error}</div>}
 
-      {/* Add to Playlist Modal */}
-      {showPlaylistModal && (
-        <div className={styles.modalOverlay}>
-          <motion.div
-            className={styles.modal}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-          >
-            <h3 className={styles.modalTitle}>
-              Add "{selectedSong?.title}" to Playlist
-            </h3>
-            
-            {playlists.length > 0 ? (
-              <div className={styles.playlistOptions}>
-                {playlists.map(playlist => (
-                  <button
-                    key={playlist.id}
-                    className={styles.playlistOption}
-                    onClick={() => handleAddToPlaylist(playlist.id)}
-                    disabled={addingSong}
+        {/* Now Playing section */}
+        <AnimatePresence>
+          {currentlyPlaying && (
+            <motion.div 
+              className={styles.nowPlaying}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              transition={{ type: "spring", damping: 20 }}
+            >
+              <h2 className={styles.sectionTitle}>Now Playing</h2>
+              <AudioPlayer 
+                songId={currentlyPlaying} 
+                onClose={handleStopPlaying}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Songs grid */}
+        <div className={styles.songsGrid}>
+          {songs.map(song => (
+            <motion.div 
+              key={song.id} 
+              className={styles.songCard}
+              whileHover={{ scale: 1.03 }}
+              transition={{ type: "spring", damping: 20 }}
+            >
+              <div className={styles.songImageContainer}>
+                <img 
+                  src={song.imageUrl || 'https://via.placeholder.com/300?text=Album+Art'} 
+                  alt={song.title || 'Song'} 
+                  className={styles.songImage}
+                />
+                <div className={styles.songOverlay}>
+                  <button 
+                    className={styles.playButton}
+                    onClick={() => handlePlaySong(song)}
                   >
-                    {playlist.name}
+                    ▶
                   </button>
-                ))}
+                  <button 
+                    className={styles.addToPlaylistButton}
+                    onClick={() => handleAddToPlaylist(song)}
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            ) : (
-              <p>You don't have any playlists yet. Create one first!</p>
-            )}
-            
-            <div className={styles.modalActions}>
-              <button
-                className={`${styles.button} ${styles.cancelButton}`}
-                onClick={() => setShowPlaylistModal(false)}
-                disabled={addingSong}
-              >
-                Cancel
-              </button>
-              <Link href="/playlists">
-                <button className={styles.button} disabled={addingSong}>
-                  Create New Playlist
-                </button>
-              </Link>
+              <h3 className={styles.songTitle}>{song.title || 'Untitled'}</h3>
+              <p className={styles.songArtist}>{song.artist || 'Unknown Artist'}</p>
+            </motion.div>
+          ))}
+
+          {/* Loading more indicator */}
+          {loading && songs.length > 0 && (
+            <div className={styles.loadingMore}>
+              <div className={styles.spinnerSmall}></div>
+              <span>Loading more songs...</span>
             </div>
-          </motion.div>
+          )}
         </div>
-      )}
-    </motion.div>
+
+        {/* Load more button */}
+        {hasMore && !loading && (
+          <div className={styles.loadMoreContainer}>
+            <button 
+              className={styles.loadMoreButton}
+              onClick={handleLoadMore}
+            >
+              Load More Songs
+            </button>
+          </div>
+        )}
+
+        {/* No songs message */}
+        {!loading && songs.length === 0 && (
+          <div className={styles.noContent}>
+            <p>No songs found. Try a different genre filter or check back later!</p>
+          </div>
+        )}
+
+        {/* Add to playlist modal */}
+        {showPlaylistModal && selectedSong && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modal}>
+              <div className={styles.modalHeader}>
+                <h3>Add to Playlist</h3>
+                <button 
+                  className={styles.closeModal}
+                  onClick={() => setShowPlaylistModal(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className={styles.modalContent}>
+                <p>Select a playlist to add "{selectedSong.title}":</p>
+                
+                {playlists.length === 0 ? (
+                  <div className={styles.noPlaylists}>
+                    <p>You don't have any playlists yet.</p>
+                    <Link href="/playlists">
+                      <button className={styles.createPlaylistButton}>
+                        Create a Playlist
+                      </button>
+                    </Link>
+                  </div>
+                ) : (
+                  <div className={styles.playlistsList}>
+                    {playlists.map(playlist => (
+                      <button
+                        key={playlist.id}
+                        className={styles.playlistItem}
+                        onClick={() => addSongToPlaylist(playlist.id)}
+                        disabled={addingSong}
+                      >
+                        {playlist.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className={styles.modalFooter}>
+                <button 
+                  className={styles.cancelButton}
+                  onClick={() => setShowPlaylistModal(false)}
+                  disabled={addingSong}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+
+      <footer className={styles.footer}>
+        <p>© 2025 Auralis. All rights reserved.</p>
+      </footer>
+    </div>
   );
 }
