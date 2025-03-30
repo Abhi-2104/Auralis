@@ -45,7 +45,7 @@ export default function Songs() {
   const fetchSongs = useCallback(async (genre = selectedGenre, token = null, reset = false) => {
     try {
       setLoading(true);
-      let path = '/api/songs';
+      let path = '/songs';
       const queryParams = {};
       
       if (genre && genre !== 'All') {

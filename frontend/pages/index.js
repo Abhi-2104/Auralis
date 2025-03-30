@@ -50,7 +50,7 @@ export default function Home() {
       // Updated API call using the new method
       const response = await get({
         apiName: 'auralisapi', 
-        path: '/api/songs'
+        path: '/songs'
       });
       console.log("Songs response:", response);
       

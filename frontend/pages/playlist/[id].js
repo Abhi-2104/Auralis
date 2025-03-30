@@ -59,7 +59,7 @@ export default function PlaylistDetail() {
       const songPromises = songIds.map(songId => 
         get({
           apiName: 'auralisapi',
-          path: `/api/songs/${songId}`
+          path: `/songs/${songId}`
         })
       );
       

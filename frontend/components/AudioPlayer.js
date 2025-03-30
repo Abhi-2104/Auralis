@@ -38,7 +38,7 @@ const AudioPlayer = ({ songId, onClose }) => {
       // Get signed URL from API
       const response = await get({
         apiName: 'auralisapi',
-        path: `/api/songs/${id}/stream`
+        path: `/songs/${id}/stream`
       });
       
       console.log('Stream URL response:', response);
