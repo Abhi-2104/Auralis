@@ -29,7 +29,7 @@ export default function Explore() {
     try {
       console.log(`Fetching songs for genre: ${selectedGenre}`);
       
-      let path = '/api/songs';
+      let path = '/songs';
       if (selectedGenre !== 'all') {
         path += `?genre=${selectedGenre}`;
       }
