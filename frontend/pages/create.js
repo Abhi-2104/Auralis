@@ -5,7 +5,7 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import awsExports from '../../../src/aws-exports';
-import styles from '../../styles/playlist.module.css';
+import styles from '../styles/playlist.module.css';
 
 Amplify.configure(awsExports);
 
