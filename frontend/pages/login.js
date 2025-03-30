@@ -1,20 +1,20 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import { Amplify } from 'aws-amplify';
-import { signIn, getCurrentUser, signOut } from 'aws-amplify/auth';
-import awsExports from '../../src/aws-exports';
-import styles from '../styles/auth.module.css';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { Amplify } from "aws-amplify";
+import { signIn, getCurrentUser, signOut } from "aws-amplify/auth";
+import awsExports from "../../src/aws-exports";
+import styles from "../styles/auth.module.css";
 
 // Configure Amplify
 Amplify.configure(awsExports);
 
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
     
     // Check if user is already authenticated when page loads
@@ -36,18 +36,18 @@ export default function Login() {
     };
   
     const handleSignIn = async () => {
-        setErrorMessage('');
+        setErrorMessage("");
         try {
             setLoading(true);
             
             // Validate inputs
             if (!email || !password) {
-                setErrorMessage('Email and password are required');
+                setErrorMessage("Email and password are required");
                 setLoading(false);
                 return;
             }
         
-            console.log('Attempting to sign in with:', email);
+            console.log("Attempting to sign in with:", email);
             
             // Using the direct signIn function with the correct parameter format
             const signInResult = await signIn({
@@ -55,18 +55,18 @@ export default function Login() {
                 password
             });
             
-            console.log('Sign in successful:', signInResult);
+            console.log("Sign in successful:", signInResult);
             
             // Redirect to home page
-            router.replace('/');
+            router.replace("/");
         } catch (err) {
-            console.error('Error signing in:', err);
+            console.error("Error signing in:", err);
             
             // If already authenticated, offer to go to home page
-            if (err.name === 'UserAlreadyAuthenticatedException') {
+            if (err.name === "UserAlreadyAuthenticatedException") {
                 setIsAuthenticated(true);
             } else {
-                setErrorMessage(err.message || 'Login Failed');
+                setErrorMessage(err.message || "Login Failed");
             }
             setLoading(false);
         }
@@ -79,8 +79,8 @@ export default function Login() {
             setIsAuthenticated(false);
             setLoading(false);
         } catch (err) {
-            console.error('Error signing out:', err);
-            setErrorMessage('Failed to sign out');
+            console.error("Error signing out:", err);
+            setErrorMessage("Failed to sign out");
             setLoading(false);
         }
     };
@@ -101,13 +101,13 @@ export default function Login() {
                 <div className={styles.authCard}>
                     <div className={styles.logo}>AURALIS</div>
                     <h1 className={styles.title}>You're already logged in</h1>
-                    <button className={styles.button} onClick={() => router.push('/')}>
+                    <button className={styles.button} onClick={() => router.push("/")}>
                         Go to Dashboard
                     </button>
                     <button 
                         className={`${styles.button} ${styles.secondaryButton}`}
                         onClick={handleSignOut}
-                        style={{ background: 'transparent', border: '1px solid var(--accent-primary)', marginTop: '1rem' }}
+                        style={{ background: "transparent", border: "1px solid var(--accent-primary)", marginTop: "1rem" }}
                     >
                         Sign Out
                     </button>
@@ -151,11 +151,11 @@ export default function Login() {
                         onClick={handleSignIn} 
                         disabled={loading}
                     >
-                        {loading ? <div className={styles.spinner}></div> : 'Sign In'}
+                        {loading ? <div className={styles.spinner}></div> : "Sign In"}
                     </button>
                     
                     <div className={styles.switchText}>
-                        Don't have an account?{' '}
+                        Don't have an account?{" "}
                         <Link href="/signup">
                             <span className={styles.link}>Sign up</span>
                         </Link>

@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     checkUser();
-  }, []);
+  }, [checkUser]);
 
   const checkUser = async () => {
     try {
