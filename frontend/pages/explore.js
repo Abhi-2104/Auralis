@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Amplify, API } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { get, post, put, del } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -15,9 +16,9 @@ export default function Explore() {
   const [error, setError] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState('all');
   const router = useRouter();
-  
+
   const genres = ['all', 'pop', 'rock', 'hip-hop', 'electronic', 'classical', 'jazz'];
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -28,10 +29,10 @@ export default function Explore() {
         router.push('/login');
       }
     };
-    
+
     checkAuth();
   }, [router, selectedGenre]);
-  
+
   const fetchSongs = async () => {
     setLoading(true);
     try {
@@ -39,8 +40,11 @@ export default function Explore() {
       if (selectedGenre !== 'all') {
         path += `?genre=${selectedGenre}`;
       }
-      
-      const songsData = await API.get('auralisapi', path);
+
+      const songsData = await get({
+        apiName: 'auralisapi',
+        path
+      });
       setSongs(songsData.songs || []);
       setError(null);
     } catch (err) {
@@ -50,9 +54,8 @@ export default function Explore() {
       setLoading(false);
     }
   };
-  
+
   const addToPlaylist = async (songId) => {
-    // Will implement in playlist page
     router.push(`/songs/${songId}`);
   };
 
@@ -72,10 +75,10 @@ export default function Explore() {
           <Link href="/library">Library</Link>
         </nav>
       </header>
-      
+
       <main className={styles.main}>
         <h1 className={styles.title}>Explore Music</h1>
-        
+
         <div className={styles.genreSelector}>
           {genres.map(genre => (
             <button
@@ -87,7 +90,7 @@ export default function Explore() {
             </button>
           ))}
         </div>
-        
+
         {loading ? (
           <div className={styles.loaderContainer}>
             <div className={styles.spinner}></div>
@@ -133,7 +136,7 @@ export default function Explore() {
           </div>
         )}
       </main>
-      
+
       <footer className={styles.footer}>
         <p>© 2025 Auralis. All rights reserved.</p>
       </footer>

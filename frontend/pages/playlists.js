@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Amplify, API } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { get, post, put, del } from 'aws-amplify/api';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import awsExports from '../../src/aws-exports';
 import { motion } from 'framer-motion';
@@ -36,7 +37,8 @@ export default function Playlists() {
     try {
       const apiName = 'auralisapi';
       const path = '/api/playlists';
-      const response = await API.get(apiName, path);
+      // Updated method: API.get() -> get()
+      const response = await get({ apiName, path });
       setPlaylists(response);
     } catch (error) {
       console.error('Error fetching playlists:', error);
@@ -79,12 +81,16 @@ export default function Playlists() {
     try {
       const apiName = 'auralisapi';
       const path = '/api/playlists';
-      const init = {
-        body: newPlaylist,
-        headers: { 'Content-Type': 'application/json' }
-      };
-
-      const response = await API.post(apiName, path, init);
+      // Updated method: API.post() -> post()
+      const response = await post({
+        apiName,
+        path,
+        options: {
+          body: newPlaylist,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      });
+      
       setPlaylists([...playlists, response]);
       setNewPlaylist({ name: '', description: '' });
       setShowCreateForm(false);

@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Amplify, API } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { get, post, put, del } from 'aws-amplify/api';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import awsExports from '../../src/aws-exports';
 import { motion } from 'framer-motion';
@@ -46,8 +47,11 @@ export default function Home() {
   const fetchSongs = async () => {
     try {
       setLoadingContent(true);
-      // Call your API Gateway endpoint to get songs
-      const response = await API.get('auralisapi', '/api/songs');
+      // Updated API call using the new method
+      const response = await get({
+        apiName: 'auralisapi', 
+        path: '/api/songs'
+      });
       console.log("Songs response:", response);
       
       if (response && response.songs) {
@@ -68,9 +72,11 @@ export default function Home() {
 
   const fetchPlaylists = async () => {
     try {
-      // Call your API Gateway endpoint to get user playlists
-      // This assumes you have an endpoint for getting user playlists
-      const response = await API.get('auralisapi', '/api/playlists');
+      // Updated API call using the new method
+      const response = await get({
+        apiName: 'auralisapi', 
+        path: '/api/playlists'
+      });
       console.log("Playlists response:", response);
       
       if (response && Array.isArray(response)) {

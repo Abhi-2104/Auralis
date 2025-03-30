@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { Amplify, API } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { get } from 'aws-amplify/api';
 import { getCurrentUser, signOut } from 'aws-amplify/auth';
 import awsExports from '../../../src/aws-exports';
 import { motion } from 'framer-motion';
@@ -33,9 +34,12 @@ export default function PlaylistDetail() {
   // Fetch playlist details
   const fetchPlaylist = useCallback(async (playlistId) => {
     try {
-      const apiName = 'auralisapi';
-      const path = `/api/playlists/${playlistId}`;
-      const response = await API.get(apiName, path);
+      // Updated API call
+      const response = await get({
+        apiName: 'auralisapi',
+        path: `/api/playlists/${playlistId}`
+      });
+      
       setPlaylist(response);
       
       // Fetch songs in the playlist
@@ -51,11 +55,14 @@ export default function PlaylistDetail() {
   // Fetch songs in the playlist
   const fetchPlaylistSongs = async (songIds) => {
     try {
-      const apiName = 'auralisapi';
-      const path = '/api/songs';
+      // Updated API calls
       const songPromises = songIds.map(songId => 
-        API.get(apiName, `${path}/${songId}`)
+        get({
+          apiName: 'auralisapi',
+          path: `/api/songs/${songId}`
+        })
       );
+      
       const songResults = await Promise.all(songPromises);
       setSongs(songResults.filter(song => song)); // Filter out any failed requests
     } catch (error) {

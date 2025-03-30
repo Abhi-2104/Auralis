@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Amplify, API } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { get, post, put, del } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -32,8 +33,8 @@ export default function Library() {
   const fetchPlaylists = async () => {
     setLoading(true);
     try {
-      // This endpoint would need to be created in your API
-      const userPlaylists = await API.get('auralisapi', '/api/playlists');
+      // Updated API call using the new method
+      const userPlaylists = await get({apiName: 'auralisapi', path: '/api/playlists'});
       setPlaylists(userPlaylists || []);
       setError(null);
     } catch (err) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Amplify, API } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { get, post, put, del } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -15,7 +16,7 @@ export default function CreatePlaylist() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -25,27 +26,30 @@ export default function CreatePlaylist() {
         router.push('/login');
       }
     };
-    
     checkAuth();
   }, [router]);
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!playlistName.trim()) {
       setError('Playlist name is required');
       return;
     }
-    
+
     setLoading(true);
     try {
-      const newPlaylist = await API.post('auralisapi', '/api/playlists', {
-        body: {
-          name: playlistName,
-          description
+      const newPlaylist = await post({
+        apiName: 'auralisapi',
+        path: '/api/playlists',
+        options: {
+          body: {
+            name: playlistName,
+            description
+          }
         }
       });
-      
+
       router.push(`/playlists/${newPlaylist.id}`);
     } catch (err) {
       console.error('Error creating playlist:', err);
@@ -70,11 +74,11 @@ export default function CreatePlaylist() {
           <Link href="/library">Library</Link>
         </nav>
       </header>
-      
+
       <main className={styles.main}>
         <div className={styles.formContainer}>
           <h1 className={styles.title}>Create New Playlist</h1>
-          
+
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formGroup}>
               <label htmlFor="playlistName">Playlist Name *</label>
@@ -88,7 +92,7 @@ export default function CreatePlaylist() {
                 disabled={loading}
               />
             </div>
-            
+
             <div className={styles.formGroup}>
               <label htmlFor="description">Description (Optional)</label>
               <textarea
@@ -100,9 +104,9 @@ export default function CreatePlaylist() {
                 disabled={loading}
               />
             </div>
-            
+
             {error && <div className={styles.error}>{error}</div>}
-            
+
             <div className={styles.formActions}>
               <button 
                 type="button"
@@ -123,7 +127,7 @@ export default function CreatePlaylist() {
           </form>
         </div>
       </main>
-      
+
       <footer className={styles.footer}>
         <p>© 2025 Auralis. All rights reserved.</p>
       </footer>
