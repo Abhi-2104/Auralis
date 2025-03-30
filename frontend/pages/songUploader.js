@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { uploadData } from 'aws-amplify/storage';
-import styles from '../styles/globals.css';
+import styles from '../styles/songUploader.module.css';
 
 export default function SongUploader() {
   const [file, setFile] = useState(null);
