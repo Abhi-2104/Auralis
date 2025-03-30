@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Amplify } from 'aws-amplify';
-import { get, post, put, del } from 'aws-amplify/api';
+import { get } from 'aws-amplify/api';
 import { getCurrentUser } from 'aws-amplify/auth';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -19,40 +19,51 @@ export default function Explore() {
 
   const genres = ['all', 'pop', 'rock', 'hip-hop', 'electronic', 'classical', 'jazz'];
 
+  // Fetch songs when component mounts or genre changes
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await getCurrentUser();
-        fetchSongs();
-      } catch (error) {
-        console.error("Authentication error:", error);
-        router.push('/login');
-      }
-    };
-
-    checkAuth();
-  }, [router, selectedGenre]);
+    fetchSongs();
+  }, [selectedGenre]);
 
   const fetchSongs = async () => {
     setLoading(true);
     try {
+      console.log(`Fetching songs for genre: ${selectedGenre}`);
+      
       let path = '/api/songs';
       if (selectedGenre !== 'all') {
         path += `?genre=${selectedGenre}`;
       }
 
-      const songsData = await get({
+      const response = await get({
         apiName: 'auralisapi',
         path
-      });
-      setSongs(songsData.songs || []);
+      }).response;
+      
+      // Parse the response body as JSON
+      const responseBody = await response.body.json();
+      console.log('API response:', responseBody);
+      
+      if (responseBody && responseBody.songs) {
+        console.log(`Fetched ${responseBody.songs.length} songs`);
+        setSongs(responseBody.songs);
+      } else {
+        console.log('No songs returned or unexpected response format:', responseBody);
+        setSongs([]);
+      }
+      
       setError(null);
     } catch (err) {
       console.error('Error fetching songs:', err);
       setError('Failed to load songs. Please try again.');
+      setSongs([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGenreChange = (genre) => {
+    setSelectedGenre(genre);
+    // fetchSongs will be called by useEffect
   };
 
   const addToPlaylist = async (songId) => {
@@ -84,7 +95,7 @@ export default function Explore() {
             <button
               key={genre}
               className={`${styles.genreButton} ${selectedGenre === genre ? styles.active : ''}`}
-              onClick={() => setSelectedGenre(genre)}
+              onClick={() => handleGenreChange(genre)}
             >
               {genre.charAt(0).toUpperCase() + genre.slice(1)}
             </button>
@@ -98,7 +109,10 @@ export default function Explore() {
         ) : error ? (
           <div className={styles.error}>{error}</div>
         ) : songs.length === 0 ? (
-          <div className={styles.noResults}>No songs found for this genre.</div>
+          <div className={styles.noResults}>
+            <p>No songs found.</p>
+            <p>Try a different genre or upload some music!</p>
+          </div>
         ) : (
           <div className={styles.songGrid}>
             {songs.map((song) => (
@@ -113,6 +127,10 @@ export default function Explore() {
                     src={song.imageUrl || '/images/default-album.png'} 
                     alt={song.title} 
                     className={styles.songImage}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '/images/default-album.png';
+                    }}
                   />
                   <button 
                     className={styles.playButton}
@@ -122,8 +140,8 @@ export default function Explore() {
                   </button>
                 </div>
                 <div className={styles.songInfo}>
-                  <h3>{song.title}</h3>
-                  <p>{song.artist}</p>
+                  <h3>{song.title || 'Unknown Title'}</h3>
+                  <p>{song.artist || 'Unknown Artist'}</p>
                 </div>
                 <button
                   className={styles.addButton}

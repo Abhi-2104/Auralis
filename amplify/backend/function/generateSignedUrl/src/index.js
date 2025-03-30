@@ -7,100 +7,95 @@ const docClient = new AWS.DynamoDB.DocumentClient();
  * for bucket: auralis-music-storage69e06-dev
  */
 exports.handler = async (event) => {
+    console.log('Received event:', JSON.stringify(event));
+    
     try {
-        console.log('Received event:', JSON.stringify(event, null, 2));
-        
-        // Get song ID from request
-        const songId = event.pathParameters?.id;
-        if (!songId) {
-            return {
-                statusCode: 400,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Headers": "Content-Type,Authorization"
-                },
-                body: JSON.stringify({ error: 'Song ID is required' })
-            };
-        }
-        
-        // Get song info from DynamoDB
-        const songData = await docClient.get({
-            TableName: process.env.STORAGE_SONGS_NAME || 'Songs',
-            Key: { id: songId }
-        }).promise();
-        
-        if (!songData.Item) {
-            return {
-                statusCode: 404,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Headers": "Content-Type,Authorization"
-                },
-                body: JSON.stringify({ error: 'Song not found' })
-            };
-        }
-        
-        // Extract S3 path from the audioUrl
-        const audioUrl = songData.Item.audioUrl;
+      const s3 = new AWS.S3();
+      const docClient = new AWS.DynamoDB.DocumentClient();
+      
+      // Parse request body
+      const body = event.body ? JSON.parse(event.body) : {};
+      const songId = body.songId;
+      
+      if (!songId) {
+        return {
+          statusCode: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*"
+          },
+          body: JSON.stringify({ error: "Song ID is required" })
+        };
+      }
+      
+      // Get song details using the exact table name
+      const tableName = 'Songs-dev';
+      console.log(`Using DynamoDB table: ${tableName} to look up song ID: ${songId}`);
+      
+      const params = {
+        TableName: tableName,
+        Key: { id: songId }
+      };
+      
+      const songData = await docClient.get(params).promise();
+      console.log('Song data from DynamoDB:', JSON.stringify(songData));
+      
+      if (!songData.Item) {
+        return {
+          statusCode: 404,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*"
+          },
+          body: JSON.stringify({ error: "Song not found" })
+        };
+      }
+      
+      // Extract S3 path from audioUrl
+      const audioUrl = songData.Item.audioUrl;
+      console.log('Audio URL from database:', audioUrl);
+      
+      // Parse the S3 URL format
+      let bucket, key;
+      if (audioUrl.startsWith('s3://')) {
         const s3Path = audioUrl.replace('s3://', '').split('/');
-        const bucket = s3Path.shift();
-        const key = s3Path.join('/');
-        
-        console.log(`Generating signed URL for bucket: ${bucket}, key: ${key}`);
-        
-        // Generate a signed URL (valid for 1 hour)
-        let streamUrl;
-        
-        // If CloudFront is configured
-        if (process.env.CLOUDFRONT_DOMAIN) {
-            const cloudFront = new AWS.CloudFront.Signer(
-                process.env.CLOUDFRONT_KEY_PAIR_ID,
-                process.env.CLOUDFRONT_PRIVATE_KEY.replace(/\\n/g, '\n')
-            );
-            
-            const cloudfrontUrl = `https://${process.env.CLOUDFRONT_DOMAIN}/${key}`;
-            streamUrl = cloudFront.getSignedUrl({
-                url: cloudfrontUrl,
-                expires: Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
-            });
-            
-            console.log(`Generated CloudFront signed URL`);
-        } else {
-            // Fallback to S3 signed URL
-            streamUrl = s3.getSignedUrl('getObject', {
-                Bucket: bucket,
-                Key: key,
-                Expires: 3600 // 1 hour
-            });
-            
-            console.log(`Generated S3 signed URL`);
-        }
-        
-        // Return the signed URL along with song details
-        return {
-            statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Content-Type,Authorization"
-            },
-            body: JSON.stringify({
-                songId: songId,
-                title: songData.Item.title,
-                artist: songData.Item.artist,
-                album: songData.Item.album,
-                streamUrl: streamUrl,
-                duration: songData.Item.duration
-            })
-        };
+        bucket = s3Path.shift();
+        key = s3Path.join('/');
+      } else {
+        key = audioUrl;
+        bucket = 'auralis-music-storage69e06-dev';
+      }
+      
+      console.log(`Generating signed URL for bucket: ${bucket}, key: ${key}`);
+      
+      // Generate signed URL
+      const signedUrl = s3.getSignedUrl('getObject', {
+        Bucket: bucket,
+        Key: key,
+        Expires: 3600 // URL expires in 1 hour
+      });
+      
+      console.log('Generated signed URL successfully');
+      
+      return {
+        statusCode: 200,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*"
+        },
+        body: JSON.stringify({
+          signedUrl: signedUrl
+        }),
+      };
     } catch (error) {
-        console.error('Error generating signed URL:', error);
-        return {
-            statusCode: 500,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Headers": "Content-Type,Authorization"
-            },
-            body: JSON.stringify({ error: 'Failed to generate streaming URL' })
-        };
+      console.error('Error generating signed URL:', error);
+      return {
+        statusCode: 500,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*"
+        },
+        body: JSON.stringify({ error: error.message }),
+      };
     }
-};
+  };
