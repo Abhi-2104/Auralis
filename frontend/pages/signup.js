@@ -147,8 +147,8 @@ export default function Signup() {
               </button>
 
               <div className={styles.switchText}>
-                Already have an account? <Link href="/login"><span className={styles.link}>Log in</span></Link>
-              </div>
+  Already have an account? <Link href="/login"><span className={styles.link}>Log in</span></Link>
+</div>
             </div>
           </div>
         ) : (
@@ -182,8 +182,8 @@ export default function Signup() {
               </button>
 
               <div className={styles.switchText}>
-                Didn't receive code? <span className={styles.link} onClick={() => alert('Resend functionality to be implemented')}>Resend</span>
-              </div>
+  Didn&apos;t receive code? <span className={styles.link} onClick={() => alert('Resend functionality to be implemented')}>Resend</span>
+</div>
             </div>
           </div>
         )}

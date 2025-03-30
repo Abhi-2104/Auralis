@@ -100,7 +100,7 @@ export default function Login() {
             <div className={`${styles.authContainer} ${styles.alreadyAuthenticated}`}>
                 <div className={styles.authCard}>
                     <div className={styles.logo}>AURALIS</div>
-                    <h1 className={styles.title}>You're already logged in</h1>
+                    <h1 className={styles.title}>You&apos;re already logged in</h1>
                     <button className={styles.button} onClick={() => router.push("/")}>
                         Go to Dashboard
                     </button>
@@ -155,11 +155,11 @@ export default function Login() {
                     </button>
                     
                     <div className={styles.switchText}>
-                        Don't have an account?{" "}
-                        <Link href="/signup">
-                            <span className={styles.link}>Sign up</span>
-                        </Link>
-                    </div>
+  Don&apos;t have an account?{" "}
+  <Link href="/signup">
+    <span className={styles.link}>Sign up</span>
+  </Link>
+</div>
                 </div>
             </div>
         </div>

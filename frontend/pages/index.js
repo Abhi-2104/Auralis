@@ -13,11 +13,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  useEffect(() => {
-    checkUser();
-  }, [checkUser]);
-
-  const checkUser = async () => {
+  // Use useCallback to memoize checkUser function
+  const checkUser = useCallback(async () => {
     try {
       const currentUser = await getCurrentUser();
       console.log("Current user in index:", currentUser);
@@ -27,7 +24,11 @@ export default function Home() {
       console.error("Error checking user:", error);
       router.push('/login');
     }
-  };
+  }, [router]); // Add router as dependency
+
+  useEffect(() => {
+    checkUser();
+  }, [checkUser]);
 
   const handleSignOut = async () => {
     const confirmSignOut = confirm('Are you sure you want to sign out?');
