@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Amplify } from 'aws-amplify';
-import { get } from 'aws-amplify/api';
+import { Amplify, API } from 'aws-amplify';
 import { getCurrentUser } from 'aws-amplify/auth';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import awsExports from '../../src/aws-exports';
+import SongCard from '../components/SongCard';
+import AudioPlayer from '../components/AudioPlayer';
 import styles from '../styles/explore.module.css';
 
 Amplify.configure(awsExports);
@@ -15,11 +16,12 @@ export default function Explore() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState('all');
+  const [currentSong, setCurrentSong] = useState(null);
+  const [audioUrl, setAudioUrl] = useState('');
   const router = useRouter();
 
   const genres = ['all', 'pop', 'rock', 'hip-hop', 'electronic', 'classical', 'jazz'];
 
-  // Fetch songs when component mounts or genre changes
   useEffect(() => {
     fetchSongs();
   }, [selectedGenre]);
@@ -27,33 +29,20 @@ export default function Explore() {
   const fetchSongs = async () => {
     setLoading(true);
     try {
-      console.log(`Fetching songs for genre: ${selectedGenre}`);
-      
       let path = '/songs';
       if (selectedGenre !== 'all') {
         path += `?genre=${selectedGenre}`;
       }
 
-      const response = await get({
-        apiName: 'auralisapi',
-        path
-      }).response;
-      
-      // Parse the response body as JSON
-      const responseBody = await response.body.json();
-      console.log('API response:', responseBody);
-      
-      if (responseBody && responseBody.songs) {
-        console.log(`Fetched ${responseBody.songs.length} songs`);
-        setSongs(responseBody.songs);
+      const response = await API.get('auralisapi', path, {});
+
+      if (response && response.songs) {
+        setSongs(response.songs);
       } else {
-        console.log('No songs returned or unexpected response format:', responseBody);
         setSongs([]);
+        setError('No songs available');
       }
-      
-      setError(null);
     } catch (err) {
-      console.error('Error fetching songs:', err);
       setError('Failed to load songs. Please try again.');
       setSongs([]);
     } finally {
@@ -61,23 +50,31 @@ export default function Explore() {
     }
   };
 
-  const handleGenreChange = (genre) => {
-    setSelectedGenre(genre);
-    // fetchSongs will be called by useEffect
+  const handlePlay = async (song) => {
+    try {
+      setCurrentSong(song);
+      if (song.audioUrl && song.audioUrl.startsWith('http')) {
+        setAudioUrl(song.audioUrl);
+        return;
+      }
+
+      const response = await API.post('auralisapi', `/stream-song/${song.id}`, {});
+      if (response && response.signedUrl) {
+        setAudioUrl(response.signedUrl);
+      } else {
+        setError('Could not play this song');
+      }
+    } catch (error) {
+      setError('Error: ' + error.message);
+    }
   };
 
-  const addToPlaylist = async (songId) => {
-    router.push(`/songs/${songId}`);
+  const handleGenreChange = (genre) => {
+    setSelectedGenre(genre);
   };
 
   return (
-    <motion.div 
-      className={styles.container}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-    >
+    <motion.div className={styles.container}>
       <header className={styles.header}>
         <div className={styles.logo}>AURALIS</div>
         <nav className={styles.nav}>
@@ -91,66 +88,26 @@ export default function Explore() {
         <h1 className={styles.title}>Explore Music</h1>
 
         <div className={styles.genreSelector}>
-          {genres.map(genre => (
-            <button
-              key={genre}
-              className={`${styles.genreButton} ${selectedGenre === genre ? styles.active : ''}`}
-              onClick={() => handleGenreChange(genre)}
-            >
-              {genre.charAt(0).toUpperCase() + genre.slice(1)}
-            </button>
+          {genres.map((genre) => (
+            <button key={genre} onClick={() => handleGenreChange(genre)}>{genre}</button>
           ))}
         </div>
 
         {loading ? (
-          <div className={styles.loaderContainer}>
-            <div className={styles.spinner}></div>
-          </div>
+          <div>Loading songs...</div>
         ) : error ? (
           <div className={styles.error}>{error}</div>
-        ) : songs.length === 0 ? (
-          <div className={styles.noResults}>
-            <p>No songs found.</p>
-            <p>Try a different genre or upload some music!</p>
-          </div>
         ) : (
           <div className={styles.songGrid}>
             {songs.map((song) => (
-              <motion.div 
-                key={song.id}
-                className={styles.songCard}
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <div className={styles.songImageContainer}>
-                  <img 
-                    src={song.imageUrl || '/images/default-album.png'} 
-                    alt={song.title} 
-                    className={styles.songImage}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = '/images/default-album.png';
-                    }}
-                  />
-                  <button 
-                    className={styles.playButton}
-                    onClick={() => router.push(`/songs/${song.id}`)}
-                  >
-                    ▶
-                  </button>
-                </div>
-                <div className={styles.songInfo}>
-                  <h3>{song.title || 'Unknown Title'}</h3>
-                  <p>{song.artist || 'Unknown Artist'}</p>
-                </div>
-                <button
-                  className={styles.addButton}
-                  onClick={() => addToPlaylist(song.id)}
-                >
-                  +
-                </button>
-              </motion.div>
+              <SongCard key={song.id} song={song} onPlay={handlePlay} />
             ))}
+          </div>
+        )}
+
+        {currentSong && (
+          <div className={styles.playerContainer}>
+            <AudioPlayer url={audioUrl} title={currentSong.title} artist={currentSong.artist} />
           </div>
         )}
       </main>

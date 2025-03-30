@@ -8,13 +8,20 @@ const PlayIcon = () => (
 );
 
 const SongCard = ({ song, onPlay }) => {
-  // Default values for missing data
   const title = song.title || 'Unknown Title';
   const artist = song.artist || 'Unknown Artist';
   const imageUrl = song.imageUrl || '/default-cover.jpg';
 
+  // Prevent navigation and just trigger audio playback
+  const handleClick = (e) => {
+    e.preventDefault(); // This prevents navigation
+    if (onPlay) {
+      onPlay(song);
+    }
+  };
+
   return (
-    <div className={styles.songCard} onClick={() => onPlay(song)}>
+    <div className={styles.songCard} onClick={handleClick}>
       <div className={styles.imageContainer}>
         <img 
           src={imageUrl} 
