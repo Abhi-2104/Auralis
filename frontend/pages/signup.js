@@ -155,7 +155,7 @@ export default function Signup() {
           <div className={styles.stageTransition}>
             <h1 className={styles.title}>Confirm Your Account</h1>
             <p style={{ textAlign: "center", marginBottom: "1.5rem", color: "var(--text-secondary)" }}>
-              We've sent a confirmation code to your email.
+              We&apos;ve sent a confirmation code to your email.
             </p>
 
             <div className={styles.form}>
