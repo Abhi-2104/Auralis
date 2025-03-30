@@ -32,7 +32,7 @@
         },
         "getSongs": {
           "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
-          "s3Key": "amplify-builds/getSongs-6b4d46474d636c6b6e68-build.zip"
+          "s3Key": "amplify-builds/getSongs-3755594b4d35715a4a4a-build.zip"
         },
         "createPlaylist": {
           "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
