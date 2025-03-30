@@ -13,8 +13,9 @@ frontend:
     build:
       commands:
         - npm run build
+        - npm run export || echo "No export script found"
   artifacts:
-    baseDirectory: frontend/.next
+    baseDirectory: frontend/out
     files:
       - '**/*'
   customHeaders:
