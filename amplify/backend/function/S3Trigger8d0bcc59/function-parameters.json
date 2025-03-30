@@ -1,0 +1,120 @@
+{
+  "permissions": {
+    "api": {
+      "auralis": [
+        "Query",
+        "Mutation",
+        "Subscription"
+      ],
+      "auralisapi": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    "auth": {
+      "auralisde9fb2f9": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    "function": {
+      "auralisbackend": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "auralismainfunc": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "registerUser": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "getSongs": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "createPlaylist": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "addSongToPlaylist": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "S3Trigger7b56c679": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "generateSignedUrl": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
+    "storage": {
+      "musicstorage": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Songs": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Playlists": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "User:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Playlist:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "Song:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ],
+      "PlaylistSongs:@model(appsync)": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}
