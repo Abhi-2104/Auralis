@@ -1,0 +1,156 @@
+.container {
+    min-height: 100vh;
+    padding: var(--space-lg);
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) 0;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+  
+  .signOutButton {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--accent-primary);
+    padding: var(--space-xs) var(--space-md);
+  }
+  
+  .title {
+    margin-bottom: var(--space-md);
+    font-size: 2.2rem;
+  }
+  
+  .description {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+  }
+  
+  .playlistGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+  
+  .playlistCard {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .playlistCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .playlistImage {
+    width: 100%;
+    height: 160px;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .playlistImagePlaceholder {
+    font-size: 3rem;
+    color: var(--accent-primary);
+  }
+  
+  .playlistInfo {
+    padding: var(--space-md);
+  }
+  
+  .playlistName {
+    font-weight: 600;
+    margin-bottom: var(--space-xs);
+  }
+  
+  .playlistSongs {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  .songList {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .songItem {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--bg-tertiary);
+    transition: background-color 0.2s ease;
+  }
+  
+  .songItem:hover {
+    background-color: var(--bg-tertiary);
+  }
+  
+  .songNumber {
+    color: var(--text-secondary);
+    font-weight: 600;
+    width: 30px;
+  }
+  
+  .songInfo {
+    margin-left: var(--space-md);
+  }
+  
+  .songTitle {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .songArtist {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+  
+  .songDuration {
+    color: var(--text-secondary);
+    margin-right: var(--space-md);
+  }
+  
+  .addButton {
+    padding: var(--space-xs) var(--space-md);
+    margin-left: var(--space-md);
+  }
+  
+  .createPlaylistForm {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+  }
+  
+  .formTitle {
+    margin-bottom: var(--space-md);
+  }
+  
+  .inputGroup {
+    margin-bottom: var(--space-md);
+  }
+  
+  .formActions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--space-lg);
+  }

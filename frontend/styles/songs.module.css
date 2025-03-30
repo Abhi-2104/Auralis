@@ -1,0 +1,150 @@
+.container {
+    min-height: 100vh;
+    padding: var(--space-lg);
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md) 0;
+    margin-bottom: var(--space-xl);
+  }
+  
+  .logo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+  
+  .nav {
+    display: flex;
+    gap: var(--space-md);
+  }
+  
+  .navLink {
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+  }
+  
+  .navLink:hover,
+  .navLinkActive {
+    color: var(--accent-primary);
+  }
+  
+  .title {
+    margin-bottom: var(--space-md);
+    font-size: 2.2rem;
+  }
+  
+  .description {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+  }
+  
+  .filters {
+    display: flex;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+  }
+  
+  .filterButton {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--bg-tertiary);
+    padding: var(--space-xs) var(--space-md);
+  }
+  
+  .filterButtonActive {
+    background-color: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+  }
+  
+  .songGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--space-lg);
+  }
+  
+  .songCard {
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .songCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .songImage {
+    width: 100%;
+    aspect-ratio: 1;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  .songImagePlaceholder {
+    font-size: 3rem;
+    color: var(--accent-primary);
+  }
+  
+  .playButton {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .songCard:hover .playButton {
+    opacity: 1;
+  }
+  
+  .playIcon {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 16px;
+    border-color: transparent transparent transparent white;
+    margin-left: 4px;
+  }
+  
+  .songInfo {
+    padding: var(--space-md);
+  }
+  
+  .songTitle {
+    font-weight: 600;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .songArtist {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .loadMore {
+    margin-top: var(--space-xl);
+    width: 100%;
+  }
