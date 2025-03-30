@@ -55,7 +55,7 @@
         },
         "S3Trigger8d0bcc59": {
           "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
-          "s3Key": "amplify-builds/S3Trigger8d0bcc59-684a444c4b6173314c2b-build.zip"
+          "s3Key": "amplify-builds/S3Trigger8d0bcc59-4844394476324d2b4767-build.zip"
         }
       },
       "storage": {

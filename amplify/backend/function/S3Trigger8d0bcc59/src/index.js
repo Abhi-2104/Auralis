@@ -23,10 +23,11 @@ exports.handler = async (event) => {
         const key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
 
         // Skip processing if not an audio file or not in music folder
-        if (!key.match(/\.(mp3|wav|ogg|flac|m4a)$/i) || !key.includes('/music/')) {
-            console.log('Not a music file or not in music folder, skipping processing');
-            return { status: 'skipped', key };
-        }
+        if (!key.match(/\.(mp3|wav|ogg|flac|m4a)$/i) || 
+    (!key.includes('/music/') && !key.includes('/public/music/'))) {
+    console.log('Not a music file or not in music folder, skipping processing');
+    return { status: 'skipped', key };
+}
 
         console.log(`Processing audio file: ${key}`);
 

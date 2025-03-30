@@ -107,7 +107,7 @@ export default function SongUploader() {
 
       // 1. Upload the audio file
       const audioResult = await uploadData({
-        key: `public/music/${audioFileName}`,
+        key: `music/${audioFileName}`,
         data: audioFile,
         options: {
           onProgress: (progress) => {
@@ -132,7 +132,7 @@ export default function SongUploader() {
       if (coverImage) {
         const imageFileName = `${timestamp}-cover-${coverImage.name.replace(/\s+/g, '-')}`;
         const imageResult = await uploadData({
-          key: `public/covers/${imageFileName}`,
+            key: `covers/${imageFileName}`,
           data: coverImage,
           options: {
             contentType: coverImage.type
