@@ -1,5 +1,13 @@
 {
   "permissions": {
+    "api": {
+      "auralisapi": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
     "storage": {
       "musicstorage": [
         "create",
@@ -45,19 +53,5 @@
       ]
     }
   },
-  "lambdaLayers": [],
-  "environmentVariableList": [
-    {
-      "cloudFormationParameterName": "cloudfrontDomain",
-      "environmentVariableName": "CLOUDFRONT_DOMAIN"
-    },
-    {
-      "cloudFormationParameterName": "cloudfrontKeyPairId",
-      "environmentVariableName": "CLOUDFRONT_KEY_PAIR_ID"
-    },
-    {
-      "cloudFormationParameterName": "cloudfrontPrivateKey",
-      "environmentVariableName": "CLOUDFRONT_PRIVATE_KEY"
-    }
-  ]
+  "lambdaLayers": []
 }

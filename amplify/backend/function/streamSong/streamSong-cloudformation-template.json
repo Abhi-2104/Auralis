@@ -16,6 +16,14 @@
     "s3Key": {
       "Type": "String"
     },
+    "apiauralisapiApiName": {
+      "Type": "String",
+      "Default": "apiauralisapiApiName"
+    },
+    "apiauralisapiApiId": {
+      "Type": "String",
+      "Default": "apiauralisapiApiId"
+    },
     "storagemusicstorageBucketName": {
       "Type": "String",
       "Default": "storagemusicstorageBucketName"
@@ -47,15 +55,6 @@
     "apiauralisGraphQLAPIIdOutput": {
       "Type": "String",
       "Default": "apiauralisGraphQLAPIIdOutput"
-    },
-    "cloudfrontDomain": {
-      "Type": "String"
-    },
-    "cloudfrontKeyPairId": {
-      "Type": "String"
-    },
-    "cloudfrontPrivateKey": {
-      "Type": "String"
     }
   },
   "Conditions": {
@@ -88,12 +87,12 @@
         "FunctionName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "generateSignedUrl",
+            "streamSong",
             {
               "Fn::Join": [
                 "",
                 [
-                  "generateSignedUrl",
+                  "streamSong",
                   "-",
                   {
                     "Ref": "env"
@@ -110,6 +109,12 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
+            },
+            "API_AURALISAPI_APINAME": {
+              "Ref": "apiauralisapiApiName"
+            },
+            "API_AURALISAPI_APIID": {
+              "Ref": "apiauralisapiApiId"
             },
             "STORAGE_MUSICSTORAGE_BUCKETNAME": {
               "Ref": "storagemusicstorageBucketName"
@@ -238,15 +243,6 @@
                   }
                 ]
               ]
-            },
-            "CLOUDFRONT_DOMAIN": {
-              "Ref": "cloudfrontDomain"
-            },
-            "CLOUDFRONT_KEY_PAIR_ID": {
-              "Ref": "cloudfrontKeyPairId"
-            },
-            "CLOUDFRONT_PRIVATE_KEY": {
-              "Ref": "cloudfrontPrivateKey"
             }
           }
         },
@@ -267,12 +263,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "auralisLambdaRole9cb940ce",
+            "auralisLambdaRole16f46a86",
             {
               "Fn::Join": [
                 "",
                 [
-                  "auralisLambdaRole9cb940ce",
+                  "auralisLambdaRole16f46a86",
                   "-",
                   {
                     "Ref": "env"
@@ -358,6 +354,36 @@
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "apigateway:POST",
+                "apigateway:PUT",
+                "apigateway:GET",
+                "apigateway:HEAD",
+                "apigateway:OPTIONS",
+                "apigateway:PATCH",
+                "apigateway:DELETE"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "::/restapis/",
+                      {
+                        "Ref": "apiauralisapiApiName"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
             {
               "Effect": "Allow",
               "Action": "s3:ListBucket",

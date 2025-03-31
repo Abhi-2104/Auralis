@@ -49,14 +49,6 @@
           ],
           "category": "function",
           "resourceName": "addSongToPlaylist"
-        },
-        {
-          "attributes": [
-            "Name",
-            "Arn"
-          ],
-          "category": "function",
-          "resourceName": "generateSignedUrl"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -176,7 +168,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "generateSignedUrl"
+          "resourceName": "streamSong"
         },
         {
           "attributes": [
@@ -337,45 +329,6 @@
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
-    "generateSignedUrl": {
-      "build": true,
-      "dependsOn": [
-        {
-          "attributes": [
-            "BucketName"
-          ],
-          "category": "storage",
-          "resourceName": "musicstorage"
-        },
-        {
-          "attributes": [
-            "Name",
-            "Arn",
-            "StreamArn"
-          ],
-          "category": "storage",
-          "resourceName": "Songs"
-        },
-        {
-          "attributes": [
-            "Name",
-            "Arn",
-            "StreamArn"
-          ],
-          "category": "storage",
-          "resourceName": "Playlists"
-        },
-        {
-          "attributes": [
-            "GraphQLAPIIdOutput"
-          ],
-          "category": "api",
-          "resourceName": "auralis"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
     "getSongs": {
       "build": true,
       "dependsOn": [
@@ -434,6 +387,53 @@
           ],
           "category": "auth",
           "resourceName": "auralisde9fb2f9"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "streamSong": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "ApiName",
+            "ApiId"
+          ],
+          "category": "api",
+          "resourceName": "auralisapi"
+        },
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "musicstorage"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Songs"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Playlists"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "auralis"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -556,46 +556,6 @@
         }
       ]
     },
-    "AMPLIFY_function_generateSignedUrl_cloudfrontDomain": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "generateSignedUrl"
-        }
-      ]
-    },
-    "AMPLIFY_function_generateSignedUrl_cloudfrontKeyPairId": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "generateSignedUrl"
-        }
-      ]
-    },
-    "AMPLIFY_function_generateSignedUrl_cloudfrontPrivateKey": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "generateSignedUrl"
-        }
-      ]
-    },
-    "AMPLIFY_function_generateSignedUrl_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "generateSignedUrl"
-        }
-      ]
-    },
-    "AMPLIFY_function_generateSignedUrl_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "generateSignedUrl"
-        }
-      ]
-    },
     "AMPLIFY_function_getSongs_deploymentBucketName": {
       "usedBy": [
         {
@@ -625,6 +585,22 @@
         {
           "category": "function",
           "resourceName": "registerUser"
+        }
+      ]
+    },
+    "AMPLIFY_function_streamSong_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "streamSong"
+        }
+      ]
+    },
+    "AMPLIFY_function_streamSong_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "streamSong"
         }
       ]
     },

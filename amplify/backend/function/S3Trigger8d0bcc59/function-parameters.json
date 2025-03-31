@@ -63,12 +63,6 @@
         "read",
         "update",
         "delete"
-      ],
-      "generateSignedUrl": [
-        "create",
-        "read",
-        "update",
-        "delete"
       ]
     },
     "storage": {

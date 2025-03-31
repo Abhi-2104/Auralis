@@ -68,11 +68,68 @@ export default function Explore() {
     // fetchSongs will be called by useEffect
   };
 
-  const playSong = (song) => {
-    // Instead of navigating to a detail page, play the song directly
+  const playSong = async (song) => {
     console.log(`Playing song: ${song.title}`);
-    setCurrentSong(song);
-    setIsPlaying(true);
+    
+    try {
+      // Show song immediately in player with loading state
+      setCurrentSong({
+        ...song,
+        // Use null instead of empty string to avoid browser warning
+        audioUrl: null
+      });
+      
+      // Check if this is an S3 URL that needs signing
+      if (song.audioUrl && song.audioUrl.startsWith('s3://')) {
+        console.log('Getting signed URL for S3 path:', song.audioUrl);
+        
+        try {
+            // Call the streamSong Lambda function via API Gateway
+            const response = await get({
+              apiName: 'auralisapi',
+              path: `/stream-song/${song.id}`  // This should match the existing path
+            }).response;
+          
+          
+          const responseData = await response.body.json();
+          console.log('Stream song response:', responseData);
+          
+          if (responseData && responseData.signedUrl) {
+            // Update the song with the playable HTTPS URL
+            setCurrentSong({
+              ...song,
+              audioUrl: responseData.signedUrl
+            });
+            setIsPlaying(true);
+          } else {
+            console.error('No signed URL returned from API');
+            // Show error state in player
+            setError('Unable to play this song - no URL returned');
+          }
+        } catch (apiError) {
+          console.error('API error getting signed URL:', apiError);
+          
+          // Use a placeholder URL for audio to avoid player errors
+          if (process.env.NODE_ENV === 'development') {
+            // Only in development, use a sample URL so we can test UI
+            setCurrentSong({
+              ...song,
+              audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0d438fb04.mp3'
+            });
+          } else {
+            setError('Unable to stream this song');
+          }
+        }
+      } else if (song.audioUrl && song.audioUrl.startsWith('http')) {
+        // If it's already an HTTP URL, we can use it directly
+        setIsPlaying(true);
+      } else {
+        // No usable URL
+        setError('This song does not have a playable URL');
+      }
+    } catch (err) {
+      console.error('Error getting signed URL:', err);
+    }
   };
 
   const addToPlaylist = async (songId, event) => {
@@ -200,21 +257,17 @@ export default function Explore() {
               </div>
             </div>
             <audio 
-              controls 
-              autoPlay
-              src={currentSong.audioUrl || 'https://example.com/song1.mp3'} 
-              className={styles.audioElement || 'audioElement'}
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
-              onError={(e) => {
-                console.error('Audio playback error:', e);
-                // If test song, use a fallback audio source
-                if (currentSong.id?.startsWith('test-song')) {
-                  e.target.src = 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0d438fb04.mp3';
-                  e.target.play();
-                }
-              }}
-            />
+  controls 
+  autoPlay
+  src={currentSong.audioUrl || undefined} 
+  className={styles.audioElement || 'audioElement'}
+  onPlay={() => setIsPlaying(true)}
+  onPause={() => setIsPlaying(false)}
+  onError={(e) => {
+    console.error('Audio playback error:', e);
+    // Don't add fallback URL here as it can cause infinite loops
+  }}
+/>
           </div>
         )}
       </main>
