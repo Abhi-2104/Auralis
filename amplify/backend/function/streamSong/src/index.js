@@ -21,47 +21,40 @@
 	STORAGE_SONGS_STREAMARN
 Amplify Params - DO NOT EDIT */
 
-// Lambda function code for existing endpoint
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, GetCommand } = require('@aws-sdk/lib-dynamodb');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 // Initialize clients with your region
-const REGION = 'ap-south-1'; 
+const REGION = 'ap-south-1'; // Make sure this matches your project region
 const dynamoClient = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const s3Client = new S3Client({ region: REGION });
 
 // Define your table and bucket names
-const SONGS_TABLE = 'Songs-dev';
-const BUCKET_NAME = 'auralis-music-storage69e06-dev';
+const SONGS_TABLE = 'Songs-dev'; // Update this if your table has a different name
+const BUCKET_NAME = 'auralis-music-storage69e06-dev'; // Update this with your actual bucket name
 
 exports.handler = async (event) => {
-  console.log('Full event received:', JSON.stringify(event, null, 2));
+  console.log('Event:', JSON.stringify(event, null, 2));
   
   try {
-    // IMPORTANT: Try multiple ways to get the ID
-    let songId;
+    // Get the song ID from the path parameters
+    const songId = event.pathParameters?.songId;
     
-    // Try to extract ID from different possible locations
-    if (event.pathParameters) {
-      songId = event.pathParameters.id || event.pathParameters.songId;
-    } else if (event.path) {
-      // Try to extract from raw path
-      const matches = event.path.match(/\/stream-song\/([^\/]+)/);
-      if (matches && matches[1]) {
-        songId = matches[1];
-      }
-    }
-    
-    // For testing, use a hardcoded ID if none found
     if (!songId) {
-      console.log("WARNING: No song ID found in request, using test ID");
-      songId = "cef8a907-478e-4796-ac3a-d9fe7f5c95df";
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "*"
+        },
+        body: JSON.stringify({ error: 'Missing song ID' })
+      };
     }
     
-    console.log('Using song ID:', songId);
+    console.log(`Getting song with ID: ${songId}`);
     
     // Get the song from DynamoDB
     const getItemCommand = new GetCommand({
@@ -78,7 +71,7 @@ exports.handler = async (event) => {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers": "*"
         },
-        body: JSON.stringify({ error: 'Song not found', id: songId })
+        body: JSON.stringify({ error: 'Song not found' })
       };
     }
     
@@ -106,7 +99,7 @@ exports.handler = async (event) => {
     
     // Generate a signed URL for the S3 object
     const command = new GetObjectCommand({
-      Bucket: bucketName || BUCKET_NAME,
+      Bucket: bucketName || BUCKET_NAME, // Use parsed bucket or default
       Key: key
     });
     
@@ -132,7 +125,8 @@ exports.handler = async (event) => {
       },
       body: JSON.stringify({ 
         error: error.message,
-        stack: error.stack
+        stack: error.stack,
+        name: error.name
       })
     };
   }

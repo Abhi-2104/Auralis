@@ -49,6 +49,14 @@
           ],
           "category": "function",
           "resourceName": "addSongToPlaylist"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "generateSignedUrl"
         }
       ],
       "providerPlugin": "awscloudformation",
@@ -168,7 +176,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "streamSong"
+          "resourceName": "generateSignedUrl"
         },
         {
           "attributes": [
@@ -293,6 +301,45 @@
           "category": "auth",
           "resourceName": "auralisde9fb2f9"
         },
+        {
+          "attributes": [
+            "BucketName"
+          ],
+          "category": "storage",
+          "resourceName": "musicstorage"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Songs"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "Playlists"
+        },
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ],
+          "category": "api",
+          "resourceName": "auralis"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
+    "generateSignedUrl": {
+      "build": true,
+      "dependsOn": [
         {
           "attributes": [
             "BucketName"
@@ -553,6 +600,46 @@
         {
           "category": "function",
           "resourceName": "createPlaylist"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_cloudfrontDomain": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_cloudfrontKeyPairId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_cloudfrontPrivateKey": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
+        }
+      ]
+    },
+    "AMPLIFY_function_generateSignedUrl_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "generateSignedUrl"
         }
       ]
     },

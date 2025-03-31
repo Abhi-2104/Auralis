@@ -52,7 +52,14 @@
         },
         "streamSong": {
           "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
-          "s3Key": "amplify-builds/streamSong-34553572756b63653842-build.zip"
+          "s3Key": "amplify-builds/streamSong-744d337a35426e416876-build.zip"
+        },
+        "generateSignedUrl": {
+          "deploymentBucketName": "amplify-auralis-dev-69e06-deployment",
+          "s3Key": "amplify-builds/generateSignedUrl-7431717933424177586c-build.zip",
+          "cloudfrontDomain": "d17n1ol1mxfgol.cloudfront.net",
+          "cloudfrontKeyPairId": "APKAQLSIVXU7TGKTAEHF",
+          "cloudfrontPrivateKey": "MIIEpAIBAAKCAQEA9lznHa3fdugv5Gqx0rPEdiFnPad/vZwE+fun65ljC/IYLGwQPUvq7mFgo93I+4h1zJ4vSCNzwiOBWWPhO9bFyKkdNnB7/fvePL1zMMNlG6ncNo+zcSL6jxidH5uxyEeEmYpxNSB3HbhhJTi1OGfn1HLQyNkzneyYpmGQhr9SDGg8wibhr+2VBD8annBDFTaBO4LpXkSLaAJ8M3tEpwieatMPwIA/lay4Y727HBG6+sDMvmP0CxoMO+DlBoqRo8HG9OQ7y7oeoazWPIRNrT1yqFcGXG3E9obcDBV1s8S7Q9xC4t0aVwDymXjKdLbr7rFtM5T9Xi3J0d/SpdTvYgWm1QIDAQABAoIBAGFQGx6XEqDmYByKpIkE50J+OUiaRBQCb9jKte6THROX4kKRwOxlc3wLzN+NeJkasuVLSoPlNRFncu17TXmUgXWcj2R0lBWkConVj42gcOy3cLvAkXHMDkq9vzrABj6FOXRowgTpOQPtU7ofJz4LlQBPBfeADCqCTV3TRgJjyiYJtCdUT4UYpbsd/RG5iPAfKzekKWUdX87LYKZrtAgPoz8QmJ46KiirKGdXXWKPJK5jUleVqog+0KkmRcWHxJ2pSo0eAlNpXpUdjm0MFyJnkiRXQq8S/1jX2S2QYElfIZHAbZkA6iixrifuENaVZqjdFhzXYz+EIzEOMKcAP30Ie1UCgYEA/IkrjZX38Th0tpeEHwAAJI7YXWM7xJuF0F39rxCuvSRCxPmACjcXALh6MToBxcKA+M4szLC/UcqNLTTdU4leYAryyTTZNtrqKHIATpSPCOYE8rRc2Km6PrqC4cpMEg+9wIf8zYtoohDX9Ro9oayxJoDv0yafYHK1qT4OXsEn+J8CgYEA+b4OI57v4tTryNRus1wqc79piQfphxTYDWRqKuBBgA76dwhwedp2fyrdmB/I+zAAc3sMhUBLCQCXcIpFl9e8h9m6tPYI6C/cXZCAN4732CwPprbpsE3gEPVFlRxvkEOswEQ+qRWlen9FXHjcWNyH/Cd9f6uDMLmRP7uvmPjXCAsCgYEAyGpoKS6KnmKqpborfZq3gkvnRH4bkdXHZe0iBkycELl1T/OefPzpgYXmW6jofTT2u/6MKUpgG54/WlApEkHjpx8pPSt284Ta7oxC2BooReyeoqsnQD+68kt80YqFwpPBiMmjhNCNkokBiqBvpx5xXNhY/F8bfySqLQ11xBdRDIsCgYB1h6Wryc5m14EnACIgso0f78LAxEJ4WazbkJgOGX95vpLMleIo1lDRw+CJCNxSqeJsdkoMI5esYuTiB5B8xwBohmTBaNAERRHVzn0oqFWnHAU5lfcgC2YZVPQsGje+krqnuPYsKI25uk9wF0jLYO12EzeSb6rLsWjTr4YR3XmExQKBgQD6s+lMIA9kzjABEVOMwWSrM+H59VO3pevXdRfQpXFt68yiqhpmBHdvM9LcjUOQpS3U/Bjs7f7+oixvUcDCFufpH0rM+RvVNVRDuGjVqgGRpyJyhXtyThnLWSi2mWZ/AvXDy9kxZkxpkIUlzNmCwPWaOQKK9Ys/xhlSHK79oeMw6A=="
         }
       },
       "storage": {

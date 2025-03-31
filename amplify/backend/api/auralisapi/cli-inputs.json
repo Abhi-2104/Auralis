@@ -46,9 +46,15 @@
     },
     "/stream-song/{id}": {
       "name": "/stream-song/{id}",
-      "lambdaFunction": "streamSong",
+      "lambdaFunction": "generateSignedUrl",
       "permissions": {
-        "setting": "open"
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
       }
     }
   }
