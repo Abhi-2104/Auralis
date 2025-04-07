@@ -13,9 +13,10 @@ Amplify.configure(awsExports);
 export default function PlaylistDetail() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [playlist, setPlaylist] = useState(null);
+  const [playlist, setPlaylist] = useState({});
   const [songs, setSongs] = useState([]);
   const [error, setError] = useState('');
+  const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
   const router = useRouter();
   const { id } = router.query;
 
@@ -24,38 +25,50 @@ export default function PlaylistDetail() {
     try {
       const currentUser = await getCurrentUser();
       setUser(currentUser);
-      setLoading(false);
+      if (id) {
+        fetchPlaylist(id);
+      }
     } catch (error) {
       console.error("Error checking user:", error);
       router.push('/login');
+    } finally {
+      setLoading(false);
     }
-  }, [router]);
+  }, [router, id]);
 
   // Fetch playlist details
-  const fetchPlaylist = useCallback(async (playlistId) => {
+  const fetchPlaylist = async (playlistId) => {
     try {
-      // Updated API call
       const response = await get({
         apiName: 'auralisapi',
         path: `/api/playlists/${playlistId}`
       });
       
-      setPlaylist(response);
+      // Process the response
+      let playlistData = response;
+      if (response && response.body) {
+        try {
+          playlistData = await response.body.json();
+        } catch (e) {
+          console.error("Error parsing response:", e);
+        }
+      }
       
-      // Fetch songs in the playlist
-      if (response.songs && response.songs.length > 0) {
-        await fetchPlaylistSongs(response.songs);
+      setPlaylist(playlistData);
+      
+      // If playlist has songs, fetch them
+      if (playlistData.songs && playlistData.songs.length > 0) {
+        await fetchPlaylistSongs(playlistData.songs);
       }
     } catch (error) {
       console.error('Error fetching playlist:', error);
       setError('Failed to load playlist. Please try again later.');
     }
-  }, []);
+  };
 
   // Fetch songs in the playlist
   const fetchPlaylistSongs = async (songIds) => {
     try {
-      // Updated API calls
       const songPromises = songIds.map(songId => 
         get({
           apiName: 'auralisapi',
@@ -71,36 +84,67 @@ export default function PlaylistDetail() {
     }
   };
 
+  // Play song function
+  const handlePlaySong = async (song) => {
+    try {
+      // If song URLs are stored in S3 and need signed URLs
+      const streamResponse = await get({
+        apiName: 'auralisapi',
+        path: `/stream-song/${song.id}`
+      });
+      
+      let streamData = streamResponse;
+      if (streamResponse && streamResponse.body) {
+        try {
+          streamData = await streamResponse.body.json();
+        } catch (e) {
+          console.error("Error parsing stream response:", e);
+        }
+      }
+      
+      if (streamData && streamData.signedUrl) {
+        setCurrentlyPlaying({
+          ...song,
+          audioUrl: streamData.signedUrl
+        });
+      } else {
+        // Fallback to direct URL if available
+        setCurrentlyPlaying(song);
+      }
+    } catch (error) {
+      console.error('Error playing song:', error);
+      setError('Failed to play this song. Please try again.');
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/login');
+    } catch (err) {
+      console.error('Error signing out:', err);
+    }
+  };
+
+  // Format duration helper
+  const formatDuration = (seconds) => {
+    if (!seconds) return '--:--';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' + secs : secs}`;
+  };
+
   useEffect(() => {
     checkUser();
   }, [checkUser]);
 
   useEffect(() => {
-    if (user && id) {
+    if (id && !loading) {
       fetchPlaylist(id);
     }
-  }, [user, id, fetchPlaylist]);
+  }, [id, loading]);
 
-  const handleSignOut = async () => {
-    const confirmSignOut = confirm('Are you sure you want to sign out?');
-    if (confirmSignOut) {
-      try {
-        await signOut();
-        router.push('/login');
-      } catch (err) {
-        console.error('Error signing out:', err);
-      }
-    }
-  };
-
-  // Format duration from seconds to MM:SS
-  const formatDuration = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? '0' + secs : secs}`;
-  };
-
-  if (loading || !playlist) {
+  if (loading) {
     return (
       <motion.div
         className={styles.loaderContainer}
@@ -174,8 +218,11 @@ export default function PlaylistDetail() {
                 {song.duration ? formatDuration(song.duration) : '--:--'}
               </div>
               <div className={styles.songControls}>
-                <button className={styles.playButton}>
-                  <span className={styles.playIcon}></span>
+                <button 
+                  className={styles.playButton}
+                  onClick={() => handlePlaySong(song)}
+                >
+                  <span className={styles.playIcon}>▶</span>
                 </button>
               </div>
             </motion.div>
@@ -187,6 +234,30 @@ export default function PlaylistDetail() {
           <Link href="/songs">
             <button className={styles.button}>Find Songs</button>
           </Link>
+        </div>
+      )}
+      
+      {/* Audio Player */}
+      {currentlyPlaying && (
+        <div className={styles.audioPlayerContainer}>
+          <div className={styles.nowPlaying}>
+            <img 
+              src={currentlyPlaying.imageUrl || '/images/default-album.png'} 
+              alt={currentlyPlaying.title}
+              className={styles.miniCover}
+            />
+            <div className={styles.songDetails}>
+              <p className={styles.nowPlayingTitle}>{currentlyPlaying.title}</p>
+              <p className={styles.nowPlayingArtist}>{currentlyPlaying.artist}</p>
+            </div>
+          </div>
+          <audio 
+            controls 
+            autoPlay
+            src={currentlyPlaying.audioUrl}
+            className={styles.audioPlayer}
+            onEnded={() => setCurrentlyPlaying(null)}
+          />
         </div>
       )}
     </motion.div>

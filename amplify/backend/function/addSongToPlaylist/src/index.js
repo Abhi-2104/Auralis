@@ -4,6 +4,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 
 exports.handler = async (event) => {
     try {
+        console.log('🎵 addSongToPlaylist Lambda called with event:', JSON.stringify(event, null, 2));
         console.log('Received event:', JSON.stringify(event, null, 2));
         
         // Get user from Cognito claims
@@ -52,7 +53,7 @@ exports.handler = async (event) => {
             };
         }
         
-        if (playlist.userId !== userId) {
+        if (playlist.userID !== userId) {
             return {
                 statusCode: 403,
                 headers: {

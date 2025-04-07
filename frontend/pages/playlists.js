@@ -37,12 +37,31 @@ export default function Playlists() {
     try {
       const apiName = 'auralisapi';
       const path = '/api/playlists';
-      // Updated method: API.get() -> get()
       const response = await get({ apiName, path });
-      setPlaylists(response);
+      
+      // Process the response based on its structure
+      let playlistsData = response;
+      
+      // Handle if response has a body property
+      if (response && response.body) {
+        try {
+          playlistsData = await response.body.json();
+        } catch (e) {
+          console.error("Error parsing response body:", e);
+          playlistsData = response;
+        }
+      }
+      
+      // Ensure playlists is always an array
+      const safePlaylistsData = Array.isArray(playlistsData) ? playlistsData : 
+                               (playlistsData ? [playlistsData] : []);
+      
+      setPlaylists(safePlaylistsData);
     } catch (error) {
       console.error('Error fetching playlists:', error);
       setError('Failed to load playlists. Please try again later.');
+      // Set empty array on error
+      setPlaylists([]);
     }
   }, []);
 
@@ -81,7 +100,7 @@ export default function Playlists() {
     try {
       const apiName = 'auralisapi';
       const path = '/api/playlists';
-      // Updated method: API.post() -> post()
+      
       const response = await post({
         apiName,
         path,
@@ -91,9 +110,31 @@ export default function Playlists() {
         }
       });
       
-      setPlaylists([...playlists, response]);
-      setNewPlaylist({ name: '', description: '' });
-      setShowCreateForm(false);
+      // Handle the response data properly
+      let newPlaylistData = response;
+      
+      // Try to get data from response based on Amplify v6 structure
+      if (response && response.body) {
+        try {
+          // If response has a body property that needs parsing
+          newPlaylistData = await response.body.json();
+        } catch (e) {
+          console.error("Error parsing response body:", e);
+          newPlaylistData = response;
+        }
+      }
+      
+      // Always work with arrays for the spread operator
+      const currentPlaylists = Array.isArray(playlists) ? playlists : [];
+      
+      // Make sure newPlaylistData is an object before adding to array
+      if (newPlaylistData && typeof newPlaylistData === 'object') {
+        setPlaylists([...currentPlaylists, newPlaylistData]);
+        setNewPlaylist({ name: '', description: '' });
+        setShowCreateForm(false);
+      } else {
+        throw new Error('Invalid playlist data received from server');
+      }
     } catch (error) {
       console.error('Error creating playlist:', error);
       setError('Failed to create playlist. Please try again.');
@@ -201,15 +242,15 @@ export default function Playlists() {
         </motion.div>
       )}
 
-      {playlists.length > 0 ? (
+      {Array.isArray(playlists) && playlists.length > 0 ? (
         <div className={styles.playlistGrid}>
-          {playlists.map((playlist) => (
-            <Link href={`/playlist/${playlist.id}`} key={playlist.id}>
-              <motion.div
-                className={styles.playlistCard}
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.2 }}
-              >
+{playlists.map((playlist) => (
+  <Link href={`/playlist/${playlist.id}`} key={playlist.id || Math.random().toString()}>
+    <motion.div
+      className={styles.playlistCard}
+      whileHover={{ scale: 1.05 }}
+      transition={{ duration: 0.2 }}
+    >
                 <div className={styles.playlistImage}>
                   <div className={styles.playlistImagePlaceholder}>♪</div>
                 </div>

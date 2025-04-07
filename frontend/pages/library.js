@@ -34,19 +34,44 @@ export default function Library() {
     setLoading(true);
     try {
       // Updated API call using the new method
-      const userPlaylists = await get({apiName: 'auralisapi', path: '/api/playlists'});
-      setPlaylists(userPlaylists || []);
+      const response = await get({apiName: 'auralisapi', path: '/api/playlists'});
+      
+      // Ensure we always have an array for playlists
+      let playlistsData;
+      
+      if (response && typeof response === 'object') {
+        if (response.body) {
+          try {
+            // If response has a body property that needs parsing
+            playlistsData = await response.body.json();
+          } catch (e) {
+            // If body isn't JSON parseable, use response directly
+            playlistsData = response;
+          }
+        } else {
+          // If response doesn't have a body, use it directly
+          playlistsData = response;
+        }
+      }
+      
+      // Ensure playlistsData is an array
+      const safePlaylistsData = Array.isArray(playlistsData) ? playlistsData : 
+                                (playlistsData ? [playlistsData] : []);
+                                
+      setPlaylists(safePlaylistsData);
       setError(null);
     } catch (err) {
       console.error('Error fetching playlists:', err);
       setError('Failed to load your playlists. Please try again.');
+      // Always set to empty array on error
+      setPlaylists([]);
     } finally {
       setLoading(false);
     }
   };
   
   const handleCreatePlaylist = () => {
-    router.push('/playlists/create');
+    router.push('/playlists/');
   };
 
   return (
@@ -98,12 +123,11 @@ export default function Library() {
           <div className={styles.playlistGrid}>
             {playlists.map((playlist) => (
               <motion.div 
-                key={playlist.id}
+                key={playlist.id || Math.random().toString()}
                 className={styles.playlistCard}
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                onClick={() => router.push(`/playlists/${playlist.id}`)}
-              >
+                onClick={() => router.push(`/playlist/${playlist.id}`)}              >
                 <div className={styles.playlistImageContainer}>
                   <img 
                     src={playlist.imageUrl || '/images/default-playlist.png'} 
